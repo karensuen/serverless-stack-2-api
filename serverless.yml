@@ -16,7 +16,7 @@ custom: # Custom variables
   tableThroughputs:
     prod: 5
     default: 1
-  tableThroughput: ${opt:stage, self:provider.stage}
+  tableThroughput: ${self:custom.tableThroughputs.${self:custom.stage}, self:custom.tableThroughputs.default}
 
   # Load our webpack config
   webpack:
