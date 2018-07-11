@@ -3,9 +3,9 @@ Resources:
   CognitoIdentityPool:
     Type: AWS::Cognito::IdentityPool
     Properties:
-      # Generate a name based on the stage e.g. devIdentityPool
+      # Generate a name based on the stage
       IdentityPoolName: ${self:custom.stage}IdentityPool
-      # Don't allow unauthenticated users
+      # Don't allow unathenticated users
       AllowUnauthenticatedIdentities: false
       # Link to our User Pool
       CognitoIdentityProviders:
@@ -14,25 +14,25 @@ Resources:
           ProviderName:
             Fn::GetAtt: [ "CognitoUserPool", "ProviderName" ]
 
-    # IAM roles
-    CognitoIdentityPoolRoles:
-      Type: AWS::Cognito::IdentityPoolRoleAttachment
-      Properties:
-        IdentityPoolId:
-          Ref: CognitoIdentityPool
-        Roles:
-          authenticated:
-            Fn::GetAtt: [CognitoAuthRole, Arn]
+  # IAM roles
+  CognitoIdentityPoolRoles:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId:
+        Ref: CognitoIdentityPool
+      Roles:
+        authenticated:
+          Fn::GetAtt: [CognitoAuthRole, Arn]
 
-    # IAM role used for authenticated users
-    CognitoAuthRole:
-      Type: AWS::IAM::Role
-      Properties:
-        Path: /
-        AssumeRolePolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: 'Allow'
+  # IAM role used for authenticated users
+  CognitoAuthRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
             Principal:
               Federated: 'cognito-identity.amazonaws.com'
             Action:
@@ -63,15 +63,16 @@ Resources:
                   Fn::Join:
                     - ''
                     -
-                      - 'arn:aws:execute-api'
+                      - 'arn:aws:execute-api:'
                       - Ref: AWS::Region
                       - ':'
                       - Ref: AWS::AccountId
                       - ':'
                       - Ref: ApiGatewayRestApi
                       - '/*'
+
               # Allow users to upload attachments to their
-              # folder inside our S3 Bucket
+              # folder inside our S3 bucket
               - Effect: 'Allow'
                 Action:
                   - 's3:*'
@@ -84,7 +85,7 @@ Resources:
                       - '$'
                       - '{cognito-identity.amazonaws.com:sub}/*'
 
-# Print out the Id of the Identity pool that is created
+# Print out the Id of the Identity Pool that is created
 Outputs:
   IdentityPoolId:
     Value:
